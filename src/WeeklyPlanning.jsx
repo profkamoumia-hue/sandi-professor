@@ -29,7 +29,14 @@ export default function WeeklyPlanning() {
       ? JSON.parse(saved)
       : Object.fromEntries(DAYS.map(day => [
           day,
-          [emptySession(), emptySession(), emptySession()]
+          [
+  emptySession(),
+  emptySession(),
+  emptySession(),
+  emptySession(),
+  emptySession(),
+  emptySession()
+]
         ]));
   });
 
