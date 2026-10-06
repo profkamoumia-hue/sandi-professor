@@ -1,0 +1,192 @@
+
+/* ===== Weekly Planning ===== */
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+.page-heading h1 { margin: 0 0 8px; font-size: 26px; }
+.page-heading p { margin: 0; color: #758197; line-height: 1.8; }
+
+.weekly-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+
+.primary-button,
+.secondary-button {
+  border-radius: 9px;
+  padding: 10px 16px;
+  border: 1px solid #dce3eb;
+  font-size: 14px;
+}
+.primary-button { border-color: #173b67; background: #173b67; color: white; }
+.secondary-button { background: white; color: #173b67; }
+
+.success-message {
+  background: #eaf8f0;
+  color: #18734a;
+  border: 1px solid #bce7cf;
+  border-radius: 12px;
+  padding: 13px 16px;
+  margin-bottom: 18px;
+}
+
+.form-section {
+  background: white;
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  padding: 23px;
+  margin-bottom: 18px;
+  box-shadow: 0 5px 18px rgba(20,40,70,.035);
+}
+.form-section h2 { margin: 0 0 18px; font-size: 18px; }
+
+.weekly-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 17px;
+}
+.weekly-meta-grid label,
+.session-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #4f5d73;
+  font-size: 13px;
+}
+.weekly-meta-grid input,
+.weekly-meta-grid select,
+.session-fields input {
+  width: 100%;
+  border: 1px solid #dce3eb;
+  border-radius: 9px;
+  padding: 11px 12px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  background: #fbfcfe;
+}
+.weekly-meta-grid input:focus,
+.weekly-meta-grid select:focus,
+.session-fields input:focus {
+  border-color: #7ca1c9;
+  box-shadow: 0 0 0 3px rgba(23,59,103,.07);
+}
+
+.weekly-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+.weekly-summary > div {
+  background: white;
+  border: 1px solid #e5eaf0;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.weekly-summary strong { font-size: 25px; color: #173b67; }
+.weekly-summary span { color: #748096; font-size: 13px; }
+
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+.day-card {
+  background: white;
+  border: 1px solid #e1e7ef;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(20,40,70,.035);
+}
+.day-header {
+  background: linear-gradient(135deg, #173b67, #1b5d96);
+  color: white;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.day-header > div { display: flex; align-items: center; gap: 9px; }
+.day-header h2 { margin: 0; font-size: 17px; }
+.day-header span { font-size: 19px; }
+
+.add-session {
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.12);
+  color: white;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: inherit;
+}
+.sessions { padding: 12px; }
+
+.session-card {
+  background: #f8fafc;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.session-card:last-child { margin-bottom: 0; }
+
+.session-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #173b67;
+  font-weight: bold;
+  font-size: 13px;
+}
+.remove-session {
+  border: 0;
+  background: #fff0f0;
+  color: #c53a3a;
+  border-radius: 7px;
+  width: 27px;
+  height: 27px;
+  font-size: 18px;
+}
+.session-fields {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 9px 10px;
+}
+.weekly-note {
+  margin: 18px 0;
+  background: #eef5fc;
+  border: 1px solid #d9e7f6;
+  color: #52647b;
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-size: 13px;
+}
+
+@media print {
+  .sidebar, .topbar, .footer-note, .weekly-actions,
+  .weekly-note, .add-session, .remove-session {
+    display: none !important;
+  }
+  .main { margin-right: 0; }
+  .content { padding: 0; max-width: none; }
+  .weekly-grid { grid-template-columns: 1fr 1fr; }
+  .day-card, .form-section, .weekly-summary > div { box-shadow: none; }
+  body { background: white; }
+}
+
+@media (max-width: 950px) {
+  .weekly-grid { grid-template-columns: 1fr; }
+  .weekly-meta-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 650px) {
+  .page-heading { display: block; }
+  .weekly-actions { margin-top: 14px; }
+  .weekly-meta-grid,
+  .weekly-summary,
+  .session-fields { grid-template-columns: 1fr; }
+}

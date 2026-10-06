@@ -1,6 +1,8 @@
 ﻿import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
+import WeeklyPlanning from './WeeklyPlanning';
+import './weekly.css';
 
 const menu = [
   ['🏠', 'لوحة التحكم'],
@@ -324,6 +326,9 @@ function App() {
     if (active === 'لوحة التحكم') {
       return <Dashboard setActive={setActive} />;
     }
+if (active === 'التخطيط الأسبوعي') {
+  return <WeeklyPlanning />;
+}
 
     if (active === 'إعداد الدروس') {
       return <LessonForm />;
