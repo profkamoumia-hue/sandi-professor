@@ -190,3 +190,119 @@
   .weekly-summary,
   .session-fields { grid-template-columns: 1fr; }
 }
+
+/* =========================
+   Print layout for weekly plan
+   ========================= */
+.weekly-print-area {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  .no-print,
+  .weekly-grid,
+  .weekly-meta,
+  .weekly-summary,
+  .weekly-heading,
+  .success-message {
+    display: none !important;
+  }
+
+  .weekly-print-area {
+    display: block !important;
+    width: 100%;
+    direction: rtl;
+    color: #111;
+    font-family: Arial, Tahoma, sans-serif;
+  }
+
+  .print-header {
+    text-align: center;
+    margin-bottom: 8mm;
+  }
+
+  .print-header h1 {
+    margin: 0 0 5mm;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .print-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3mm 5mm;
+    border: 1px solid #333;
+    padding: 4mm;
+    margin-bottom: 5mm;
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .weekly-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 9.5px;
+    direction: rtl;
+  }
+
+  .weekly-print-table th,
+  .weekly-print-table td {
+    border: 1px solid #333;
+    padding: 3mm 2mm;
+    vertical-align: middle;
+    text-align: center;
+    word-wrap: break-word;
+  }
+
+  .weekly-print-table thead th {
+    background: #e9eef5 !important;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .weekly-print-table .print-day {
+    font-weight: 700;
+    font-size: 11px;
+    background: #f3f5f8 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .weekly-print-table th:nth-child(1),
+  .weekly-print-table td:nth-child(1) { width: 12%; }
+  .weekly-print-table th:nth-child(2),
+  .weekly-print-table td:nth-child(2) { width: 7%; }
+  .weekly-print-table th:nth-child(3),
+  .weekly-print-table td:nth-child(3) { width: 13%; }
+  .weekly-print-table th:nth-child(4),
+  .weekly-print-table td:nth-child(4) { width: 22%; }
+  .weekly-print-table th:nth-child(5),
+  .weekly-print-table td:nth-child(5) { width: 18%; }
+  .weekly-print-table th:nth-child(6),
+  .weekly-print-table td:nth-child(6) { width: 18%; }
+  .weekly-print-table th:nth-child(7),
+  .weekly-print-table td:nth-child(7) { width: 10%; }
+
+  .weekly-print-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .weekly-print-table thead {
+    display: table-header-group;
+  }
+
+  .print-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8mm;
+    font-size: 11px;
+  }
+}

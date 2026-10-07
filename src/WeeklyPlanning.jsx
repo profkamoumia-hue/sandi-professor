@@ -7,68 +7,62 @@ const emptySession = () => ({
   lesson: '',
   objective: '',
   activity: '',
-  room: ''
+  room: '',
 });
+
+const createDefaultPlan = () =>
+  Object.fromEntries(
+    DAYS.map((day) => [
+      day,
+      Array.from({ length: 6 }, () => emptySession()),
+    ])
+  );
 
 export default function WeeklyPlanning() {
   const [meta, setMeta] = useState(() => {
     const saved = localStorage.getItem('sandiWeeklyMeta');
-    return saved ? JSON.parse(saved) : {
-      year: '2026/2027',
-      week: '',
-      subject: '',
-      level: '',
-      teacher: '',
-      school: ''
-    };
+    return saved
+      ? JSON.parse(saved)
+      : {
+          year: '2026/2027',
+          week: '',
+          subject: '',
+          level: '',
+          teacher: '',
+          school: '',
+        };
   });
 
   const [plan, setPlan] = useState(() => {
     const saved = localStorage.getItem('sandiWeeklyPlan');
-    return saved
-      ? JSON.parse(saved)
-      : Object.fromEntries(DAYS.map(day => [
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Ensure every day has exactly six session slots.
+      return Object.fromEntries(
+        DAYS.map((day) => [
           day,
-          [
-  emptySession(),
-  emptySession(),
-  emptySession(),
-  emptySession(),
-  emptySession(),
-  emptySession()
-]
-        ]));
+          Array.from({ length: 6 }, (_, i) => parsed?.[day]?.[i] || emptySession()),
+        ])
+      );
+    }
+    return createDefaultPlan();
   });
 
   const [saved, setSaved] = useState(false);
 
   const updateMeta = (field, value) => {
-    setMeta(prev => ({ ...prev, [field]: value }));
+    setMeta((prev) => ({ ...prev, [field]: value }));
     setSaved(false);
   };
 
   const updateSession = (day, index, field, value) => {
-    setPlan(prev => ({
+    setPlan((prev) => ({
       ...prev,
       [day]: prev[day].map((session, i) =>
         i === index ? { ...session, [field]: value } : session
-      )
+      ),
     }));
     setSaved(false);
-  };
-
-  const addSession = day => {
-    setPlan(prev => ({
-      ...prev,
-      [day]: [...prev[day], emptySession()]
-    }));
-  };
-
-  const removeSession = (day, index) => {
-    setPlan(prev => ({
-      ...prev,
-      [day]: prev[day].filter((_, i) => i !== index)
-    }));
   };
 
   const savePlan = () => {
@@ -78,123 +72,112 @@ export default function WeeklyPlanning() {
   };
 
   const resetPlan = () => {
-    if (!window.confirm('هل تريد مسح التخطيط الأسبوعي الحالي؟')) return;
-    const blank = Object.fromEntries(
-      DAYS.map(day => [day, [emptySession(), emptySession(), emptySession()]])
-    );
-    setPlan(blank);
+    if (!window.confirm('هل تريد مسح التخطيط الأسبوعي بالكامل؟')) return;
+    const fresh = createDefaultPlan();
+    setPlan(fresh);
     setMeta({
       year: '2026/2027',
       week: '',
       subject: '',
       level: '',
       teacher: '',
-      school: ''
+      school: '',
     });
     localStorage.removeItem('sandiWeeklyMeta');
     localStorage.removeItem('sandiWeeklyPlan');
     setSaved(false);
   };
 
+  const printPlan = () => {
+    window.print();
+  };
+
   return (
-    <div className="weekly-page">
-      <div className="page-heading weekly-heading">
+    <div className="weekly-page" dir="rtl">
+      <div className="page-heading weekly-heading no-print">
         <div>
           <h1>📅 التخطيط الأسبوعي</h1>
           <p>نظّم حصصك وأهدافك وأنشطتك خلال أيام الأسبوع في مكان واحد.</p>
         </div>
 
         <div className="weekly-actions">
-          <button className="secondary-button" onClick={resetPlan}>🔄 مسح</button>
-          <button className="secondary-button" onClick={() => window.print()}>🖨️ طباعة</button>
+          <button className="secondary-button" onClick={resetPlan}>🗑 مسح</button>
+          <button className="secondary-button" onClick={printPlan}>🖨 طباعة</button>
           <button className="primary-button" onClick={savePlan}>💾 حفظ الخطة</button>
         </div>
       </div>
 
       {saved && (
-        <div className="success-message">
-          ✅ تم حفظ التخطيط الأسبوعي على هذا الجهاز.
+        <div className="success-message no-print">
+          ☑ تم حفظ التخطيط الأسبوعي على هذا الجهاز
         </div>
       )}
 
-      <div className="form-section weekly-meta">
+      <div className="form-section weekly-meta no-print">
         <h2>بيانات الأسبوع</h2>
 
         <div className="weekly-meta-grid">
           <label>
             السنة الدراسية
-            <input value={meta.year} onChange={e => updateMeta('year', e.target.value)} />
+            <input value={meta.year} onChange={(e) => updateMeta('year', e.target.value)} />
           </label>
 
           <label>
             الأسبوع
             <input
+              placeholder="مثال: الأسبوع 01"
               value={meta.week}
-              onChange={e => updateMeta('week', e.target.value)}
-              placeholder="مثال: الأسبوع 04"
+              onChange={(e) => updateMeta('week', e.target.value)}
             />
           </label>
 
           <label>
             المادة
-            <select value={meta.subject} onChange={e => updateMeta('subject', e.target.value)}>
-              <option value="">اختر المادة</option>
-              <option>الرياضيات</option>
-              <option>اللغة العربية</option>
-              <option>اللغة الفرنسية</option>
-              <option>اللغة الإنجليزية</option>
-              <option>العلوم الطبيعية</option>
-              <option>الفيزياء</option>
-              <option>التاريخ والجغرافيا</option>
-            </select>
+            <input
+              placeholder="مثال: الرياضيات"
+              value={meta.subject}
+              onChange={(e) => updateMeta('subject', e.target.value)}
+            />
           </label>
 
           <label>
             المستوى
-            <select value={meta.level} onChange={e => updateMeta('level', e.target.value)}>
-              <option value="">اختر المستوى</option>
-              <option>الأولى ابتدائي</option>
-              <option>الثانية ابتدائي</option>
-              <option>الثالثة ابتدائي</option>
-              <option>الرابعة ابتدائي</option>
-              <option>الخامسة ابتدائي</option>
-              <option>الأولى متوسط</option>
-              <option>الثانية متوسط</option>
-              <option>الثالثة متوسط</option>
-              <option>الرابعة متوسط</option>
-            </select>
+            <input
+              placeholder="مثال: الرابعة متوسط"
+              value={meta.level}
+              onChange={(e) => updateMeta('level', e.target.value)}
+            />
           </label>
 
           <label>
-            اسم الأستاذ
+            الأستاذ
             <input
-              value={meta.teacher}
-              onChange={e => updateMeta('teacher', e.target.value)}
               placeholder="اسم الأستاذ"
+              value={meta.teacher}
+              onChange={(e) => updateMeta('teacher', e.target.value)}
             />
           </label>
 
           <label>
             المؤسسة
             <input
-              value={meta.school}
-              onChange={e => updateMeta('school', e.target.value)}
               placeholder="اسم المؤسسة"
+              value={meta.school}
+              onChange={(e) => updateMeta('school', e.target.value)}
             />
           </label>
         </div>
       </div>
 
-      <div className="weekly-summary">
-        <div><strong>5</strong><span>أيام الدراسة</span></div>
-        <div>
-          <strong>{DAYS.reduce((n, day) => n + plan[day].length, 0)}</strong>
-          <span>خانات الحصص</span>
-        </div>
+      <div className="weekly-summary no-print">
+        <div><strong>5</strong><span>أيام دراسية</span></div>
+        <div><strong>30</strong><span>حصة في الأسبوع</span></div>
         <div>
           <strong>
             {DAYS.reduce(
-              (n, day) => n + plan[day].filter(s => s.lesson.trim()).length,
+              (total, day) =>
+                total +
+                plan[day].filter((s) => s.lesson || s.objective || s.activity || s.time || s.room).length,
               0
             )}
           </strong>
@@ -202,91 +185,123 @@ export default function WeeklyPlanning() {
         </div>
       </div>
 
-      <div className="weekly-grid">
-        {DAYS.map(day => (
+      <div className="weekly-grid no-print">
+        {DAYS.map((day) => (
           <section className="day-card" key={day}>
             <div className="day-header">
-              <div>
-                <span>📅</span>
-                <h2>{day}</h2>
-              </div>
-              <button className="add-session" onClick={() => addSession(day)}>
-                ＋ حصة
-              </button>
+              <h2>{day}</h2>
+              <span>6 حصص</span>
             </div>
 
-            <div className="sessions">
-              {plan[day].map((session, index) => (
-                <div className="session-card" key={index}>
-                  <div className="session-top">
-                    <span>الحصة {index + 1}</span>
-
-                    {plan[day].length > 1 && (
-                      <button
-                        className="remove-session"
-                        onClick={() => removeSession(day, index)}
-                        title="حذف الحصة"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="session-fields">
-                    <label>
-                      التوقيت
-                      <input
-                        value={session.time}
-                        onChange={e => updateSession(day, index, 'time', e.target.value)}
-                        placeholder="08:00 - 09:00"
-                      />
-                    </label>
-
-                    <label>
-                      الدرس / النشاط
-                      <input
-                        value={session.lesson}
-                        onChange={e => updateSession(day, index, 'lesson', e.target.value)}
-                        placeholder="عنوان الدرس"
-                      />
-                    </label>
-
-                    <label>
-                      الهدف
-                      <input
-                        value={session.objective}
-                        onChange={e => updateSession(day, index, 'objective', e.target.value)}
-                        placeholder="الهدف التعلمي"
-                      />
-                    </label>
-
-                    <label>
-                      النشاط / التقويم
-                      <input
-                        value={session.activity}
-                        onChange={e => updateSession(day, index, 'activity', e.target.value)}
-                        placeholder="تمرين، نشاط، تقويم..."
-                      />
-                    </label>
-
-                    <label>
-                      القسم
-                      <input
-                        value={session.room}
-                        onChange={e => updateSession(day, index, 'room', e.target.value)}
-                        placeholder="القسم"
-                      />
-                    </label>
-                  </div>
+            {plan[day].map((session, index) => (
+              <div className="session-card" key={index}>
+                <div className="session-title">
+                  <strong>الحصة {index + 1}</strong>
                 </div>
-              ))}
-            </div>
+
+                <div className="session-fields">
+                  <label>
+                    التوقيت
+                    <input
+                      value={session.time}
+                      placeholder="08:00 - 09:00"
+                      onChange={(e) => updateSession(day, index, 'time', e.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    الدرس / النشاط
+                    <input
+                      value={session.lesson}
+                      placeholder="عنوان الدرس"
+                      onChange={(e) => updateSession(day, index, 'lesson', e.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    الهدف
+                    <input
+                      value={session.objective}
+                      placeholder="الهدف التعلمي"
+                      onChange={(e) => updateSession(day, index, 'objective', e.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    النشاط / التقويم
+                    <input
+                      value={session.activity}
+                      placeholder="تمرين، نشاط، تقويم..."
+                      onChange={(e) => updateSession(day, index, 'activity', e.target.value)}
+                    />
+                  </label>
+
+                  <label>
+                    القسم
+                    <input
+                      value={session.room}
+                      placeholder="القسم"
+                      onChange={(e) => updateSession(day, index, 'room', e.target.value)}
+                    />
+                  </label>
+                </div>
+              </div>
+            ))}
           </section>
         ))}
       </div>
 
-      <div className="weekly-note">
-        💡 أضف أو احذف الحصص حسب جدولك الحقيقي، ثم احفظ الخطة. البيانات تُحفظ على هذا الجهاز ويمكن طباعتها.
+      {/* نسخة خاصة بالطباعة: جدول واحد، وكل يوم يليه حصصه ثم اليوم الموالي */}
+      <div className="weekly-print-area">
+        <div className="print-header">
+          <h1>التخطيط الأسبوعي</h1>
+          <div className="print-meta">
+            <span><b>السنة:</b> {meta.year || '................'}</span>
+            <span><b>الأسبوع:</b> {meta.week || '................'}</span>
+            <span><b>المادة:</b> {meta.subject || '................'}</span>
+            <span><b>المستوى:</b> {meta.level || '................'}</span>
+            <span><b>الأستاذ:</b> {meta.teacher || '................'}</span>
+            <span><b>المؤسسة:</b> {meta.school || '................'}</span>
+          </div>
+        </div>
+
+        <table className="weekly-print-table">
+          <thead>
+            <tr>
+              <th>اليوم</th>
+              <th>الحصة</th>
+              <th>التوقيت</th>
+              <th>الدرس / النشاط</th>
+              <th>الهدف التعلمي</th>
+              <th>النشاط / التقويم</th>
+              <th>القسم</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DAYS.map((day) =>
+              plan[day].map((session, index) => (
+                <tr key={`${day}-${index}`}>
+                  {index === 0 && (
+                    <td className="print-day" rowSpan={6}>
+                      {day}
+                    </td>
+                  )}
+                  <td>{index + 1}</td>
+                  <td>{session.time || ''}</td>
+                  <td>{session.lesson || ''}</td>
+                  <td>{session.objective || ''}</td>
+                  <td>{session.activity || ''}</td>
+                  <td>{session.room || ''}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+
+        <div className="print-footer">
+          <span>إمضاء الأستاذ: ............................</span>
+          <span>إمضاء الإدارة: ............................</span>
+        </div>
       </div>
     </div>
   );
